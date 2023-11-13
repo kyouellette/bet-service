@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class WalletService {
   constructor(private httpService: HttpService) {}
 
-  private walletServiceUrl = 'http://localhost:3001/api/wallet';
+  private walletServiceUrl = process.env.WALLETURL;
 
   createTransaction(
     userId: string,
@@ -22,7 +22,7 @@ export class WalletService {
     };
 
     return this.httpService.post<number>(
-      `${this.walletServiceUrl}/transaction/create`,
+      `${this.walletServiceUrl}/api/wallet/transaction/create`,
       data,
     );
   }
