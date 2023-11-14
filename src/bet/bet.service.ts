@@ -109,9 +109,7 @@ export class BetService {
       );
       if (streamerResult.value >= individualBet.value) {
         const betOption = betGroup.betOptions.find(
-          (option) =>
-            option.category === individualBet.category &&
-            option.value === individualBet.value,
+          (option) => option.category === individualBet.category,
         );
         console.log(betOption);
         winMultipler += betOption?.payoutMultiplier;
