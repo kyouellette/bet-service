@@ -97,12 +97,6 @@ export class BetGroupService {
 
       Promise.all(resolvedBetPromises);
     }
-    await this.betGroupRepository.update(
-      { id: id },
-      {
-        active: false,
-      },
-    );
     return await this.betGroupRepository.findOne({
       where: {
         id: id,

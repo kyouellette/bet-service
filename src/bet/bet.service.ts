@@ -113,7 +113,8 @@ export class BetService {
             option.category === individualBet.category &&
             option.value === individualBet.value,
         );
-        winMultipler += betOption.payoutMultiplier;
+        console.log(betOption);
+        winMultipler += betOption?.payoutMultiplier;
         await this.invidiualBetRepository.update(
           { id: individualBet.id },
           {
