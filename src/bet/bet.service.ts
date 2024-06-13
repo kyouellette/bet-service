@@ -14,7 +14,7 @@ export class BetService {
     @InjectRepository(BetEntity)
     private readonly betRepository: Repository<BetEntity>,
     @InjectRepository(IndividualBetEntity)
-    private readonly invidiualBetRepository: Repository<IndividualBetEntity>,
+    private readonly individualBetRepository: Repository<IndividualBetEntity>,
     private readonly walletService: WalletService,
   ) {}
 
@@ -35,7 +35,7 @@ export class BetService {
 
       const saveIndividualBetsPromises = bet.betsPlaced.map(
         async (individualBet) => {
-          await this.invidiualBetRepository.save({
+          await this.individualBetRepository.save({
             ...individualBet,
             betId: savedBet.id,
             won: false,
@@ -102,30 +102,21 @@ export class BetService {
       return bet;
     }
 
-    let winMultipler = 0;
+    let winMultiplier = 0;
     const updatedBetPromises = bet.betsPlaced.map(async (individualBet) => {
-      const streamerResult = result.find(
-        (result) => result.category === individualBet.category,
-      );
-      if (streamerResult.value >= individualBet.value) {
-        const betOption = betGroup.betOptions.find(
-          (option) =>
-            option.category === individualBet.category &&
-            option.value === individualBet.value,
-        );
-        winMultipler += betOption?.payoutMultiplier;
-        await this.invidiualBetRepository.update(
-          { id: individualBet.id },
-          {
-            won: true,
-          },
-        );
+      const streamerResult = result.find(r => r.category === individualBet.category);
+      if (streamerResult && streamerResult.value >= individualBet.value) {
+        const betOption = betGroup.betOptions.find(option => option.category === individualBet.category && option.value === individualBet.value);
+        if (betOption) {
+          winMultiplier += betOption.payoutMultiplier;
+          await this.individualBetRepository.update({ id: individualBet.id }, { won: true });
+        }
       }
     });
 
     await Promise.all(updatedBetPromises);
 
-    const wonValueNumber = parseFloat(bet.totalBetAmount) * winMultipler;
+    const wonValueNumber = parseFloat(bet.totalBetAmount) * winMultiplier;
     const wonValueString = wonValueNumber.toFixed(2);
 
     if (wonValueNumber > 0) {
